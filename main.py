@@ -19,7 +19,7 @@ class Config:
 config = Config()
 
 # Create bot object with prefix from config
-bot = commands.Bot(command_prefix=config.token)
+bot = commands.Bot(command_prefix=config.bot_prefix)
 
 # Stores message id's from messages that were already used to mention people
 # Prevents pinging for a message twice
@@ -66,7 +66,7 @@ async def on_reaction_add(reaction: discord.Reaction, _):
             # Send the user instructions on how to mention all of the reactants
             # The command the user is told to use is (prefix)ping MESSAGE_ID_OF_ORIGINAL_POST
             await reaction.message.author.send(
-                f"Your LFP Post reached the minimum of {config.min_players} reacts!\nReply with `$ping {reaction.message.id}` __**in this DM**__  to ping the people that want to join!")
+                f"Your LFP Post reached the minimum of {config.min_players} reacts!\nReply with `{config.bot_prefix}ping {reaction.message.id}` __**in this DM**__  to ping the people that want to join!")
             # Mark the message to not notify the user again
             already_notified_messages.append(reaction.message.id)
 
@@ -91,14 +91,17 @@ async def ping(ctx: discord.ext.commands.context.Context, message: discord.Messa
             already_pinged_messages.append(message.id)
             # Tell the user that everything is done.
             await ctx.send(
-                "I mentioned all the people who reacted to your post in that channel. Make sure to put a message there telling them which lobby to join!")
+                "I mentioned all the people who reacted to your post in that channel. Make sure to put a message "
+                "there telling them which lobby to join!")
         else:
             # Warn the user that there are not enough reactions.
             await ctx.send(
-                "The message doesn't have enough reacts yet! Don't try and write commands manually. I'll tell you once you can ping.")
+                "The message doesn't have enough reacts yet! Don't try and write commands manually. I'll tell you "
+                "once you can ping.")
     else:
         # If that's wrong send the user a warning.
-        await ctx.send("Somehow your command is messed up. Make sure you didn't already ping and that the number is correct!")
+        await ctx.send("Somehow your command is messed up. Make sure you didn't already ping and that the number is "
+                       "correct!")
 
 
 @ping.error
