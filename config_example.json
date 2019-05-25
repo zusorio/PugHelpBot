@@ -1,0 +1,9 @@
+{
+  "token": "Discord Bot API Key here",
+  "allowed_channels": [
+    "na-looking-for-pug",
+    "eu-looking-for-pug"
+  ],
+  "min_players": 12,
+  "bot_prefix": "$"
+}
