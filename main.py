@@ -25,7 +25,6 @@ bot = commands.Bot(command_prefix=config.bot_prefix)
 # Prevents pinging for a message twice
 already_pinged_messages = []
 
-
 # Stores message id's from messages that we already told the user about
 # Otherwise the user gets spammed after the min amount of reacts whenever someone reacts
 already_notified_messages = []
@@ -58,15 +57,18 @@ async def on_ready():
 @bot.event
 async def on_reaction_add(reaction: discord.Reaction, _):
     # If the reaction is on a message in the specified channels and wasn't pinged and notified for
-    if reaction.message.channel.name in config.allowed_channels and reaction.message.id not in (already_notified_messages, already_pinged_messages):
+    if reaction.message.channel.name in config.allowed_channels and reaction.message.id not in (
+            already_notified_messages, already_pinged_messages):
         # Get all unique users that reacted
         unique_reacts = await get_unique_message_react_users(reaction.message)
         # If there are the minimum of required reacts
         if len(unique_reacts) >= config.min_players:
-            # Send the user instructions on how to mention all of the reactants
+            # Send the user instructions on how to mention all of the reactantsp
             # The command the user is told to use is (prefix)ping MESSAGE_ID_OF_ORIGINAL_POST
             await reaction.message.author.send(
-                f"Your LFP Post reached the minimum of {config.min_players} reacts!\nReply with `{config.bot_prefix}ping {reaction.message.id}` __**in this DM**__  to ping the people that want to join!")
+                f"Your LFP Post reached the minimum of {config.min_players}"
+                f"reacts!\nReply with `{config.bot_prefix}ping {reaction.message.id}`"
+                f"__**in this DM**__  to ping the people that want to join!")
             # Mark the message to not notify the user again
             already_notified_messages.append(reaction.message.id)
 
@@ -79,29 +81,36 @@ async def ping(ctx: discord.ext.commands.context.Context, message: discord.Messa
     :param message: The message ID of the message to ping for. The user get's this sent in the command they are told to use.
     :return: Nothing
     """
-    # Make sure that the message is in a correct channel and that we haven't pinged for it yet
-    if message.channel.name in config.allowed_channels and message.id not in already_pinged_messages:
-        # Get all the users we need the mention for that message
-        users_to_mention = await get_unique_message_react_users(message)
-        # Make sure there are actually enough users for a ping
-        if len(users_to_mention) >= config.min_players:
-            # If everything is OK, mention all the users in a post in the original channel, separated by newlines
-            await message.channel.send("\n".join(user.mention for user in users_to_mention))
-            # Add the message to the already_pinged list so that the user doesn't ping for the same message twice
-            already_pinged_messages.append(message.id)
-            # Tell the user that everything is done.
-            await ctx.send(
-                "I mentioned all the people who reacted to your post in that channel. Make sure to put a message "
-                "there telling them which lobby to join!")
+    # Check that we are being sent the command via DM
+    if isinstance(message.channel, discord.DMChannel):
+        # Make sure that the message is in a correct channel and that we haven't pinged for it yet
+        if message.channel.name in config.allowed_channels and message.id not in already_pinged_messages:
+            # Get all the users we need the mention for that message
+            users_to_mention = await get_unique_message_react_users(message)
+            # Make sure there are actually enough users for a ping
+            if len(users_to_mention) >= config.min_players:
+                # If everything is OK, mention all the users in a post in the original channel, separated by newlines
+                await message.channel.send("\n".join(user.mention for user in users_to_mention))
+                # Add the message to the already_pinged list so that the user doesn't ping for the same message twice
+                already_pinged_messages.append(message.id)
+                # Tell the user that everything is done.
+                await ctx.send(
+                    "I mentioned all the people who reacted to your post in that channel. Make sure to put a message "
+                    "there telling them which lobby to join!")
+            else:
+                # Warn the user that there are not enough reactions.
+                await ctx.send(
+                    "The message doesn't have enough reacts yet! Don't try and write commands manually. I'll tell you "
+                    "once you can ping.")
         else:
-            # Warn the user that there are not enough reactions.
+            # If that's wrong send the user a warning.
             await ctx.send(
-                "The message doesn't have enough reacts yet! Don't try and write commands manually. I'll tell you "
-                "once you can ping.")
+                "Somehow your command is messed up. Make sure you didn't already ping and that the number is correct!")
     else:
-        # If that's wrong send the user a warning.
-        await ctx.send("Somehow your command is messed up. Make sure you didn't already ping and that the number is "
-                       "correct!")
+        # If not in a DM, warn the User and delete the message
+        await ctx.author.send("Please use my commands via DM only!")
+        # TODO: Make sure that the permissions are OK and that staff are OK with this
+        await ctx.message.delete()
 
 
 @ping.error
@@ -120,6 +129,29 @@ async def ping_error(ctx: discord.ext.commands.context.Context, error):
         await ctx.send("Something went wrong... Sorry about that.")
 
         print(error)
+
+
+@bot.command()
+async def mod_ping(ctx: discord.ext.commands.context.Context, message: discord.Message):
+    # Bypasses all checks and just pings for any message. Just give it any message ID
+    # TODO: Make this check for a staff role before running
+    users_to_mention = await get_unique_message_react_users(message)
+    await message.channel.send("\n".join(user.mention for user in users_to_mention))
+    # Tell the user that everything is done.
+    await ctx.send(
+        "I mentioned all the people who reacted to your post in that channel. Make sure to put a message "
+        "there telling them which lobby to join!")
+    # Add the message to the already_pinged and already_notified list
+    # Note: this does not prevent repeat staff pings
+    already_pinged_messages.append(message.id)
+    already_notified_messages.append(message.id)
+
+
+@mod_ping.error
+async def mod_ping_error(ctx: discord.ext.commands.context.Context, error):
+    await ctx.send(error)
+    print(error)
+
 
 # Run the bot
 bot.run(config.token)
