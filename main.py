@@ -50,7 +50,7 @@ async def get_unique_message_react_users(message: discord.Message) -> list:
 @bot.event
 async def on_ready():
     # Set rich presence and inform us once the bot is ready
-    await bot.change_presence(status=discord.Status.online, activity=discord.Game("helping people ping"))
+    await bot.change_presence(status=discord.Status.online, activity=discord.Game(f"PUGS (Prefix {config.bot_prefix})"))
     print("Logged in")
 
 
@@ -62,7 +62,7 @@ async def on_reaction_add(reaction: discord.Reaction, _):
         unique_reacts = await get_unique_message_react_users(reaction.message)
         # If there are the minimum of required reacts
         if len(unique_reacts) >= config.min_players:
-            # Send the user instructions on how to mention all of the reactantsp
+            # Send the user instructions on how to mention all of the reactants
             # The command the user is told to use is (prefix)ping MESSAGE_ID_OF_ORIGINAL_POST
             await reaction.message.author.send(
                 f"Your LFP Post reached the minimum of {config.min_players}"
@@ -150,6 +150,13 @@ async def mod_ping(ctx: discord.ext.commands.context.Context, message: discord.M
 async def mod_ping_error(ctx: discord.ext.commands.context.Context, error):
     await ctx.send(error)
     print(error)
+
+
+@bot.command()
+async def change_min_reacts(ctx: discord.ext.commands.context.Context, min_reacts: int):
+    # TODO: Make this check for a staff role before running
+    config.min_players = min_reacts
+    await ctx.send(f"Set the minimum amount of reacts to {min_reacts}")
 
 
 # Run the bot
