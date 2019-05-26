@@ -6,4 +6,4 @@ WORKDIR /usr/src/bot
 COPY main.py /usr/src/bot
 COPY config.json /usr/src/bot
 
-ENTRYPOINT ["python3", "/usr/src/bot"]
+ENTRYPOINT ["python3", "/usr/src/bot/main.py"]
