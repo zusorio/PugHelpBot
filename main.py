@@ -13,6 +13,7 @@ class Config:
         self.allowed_channels = self.config_object["allowed_channels"]
         self.min_players = self.config_object["min_players"]
         self.bot_prefix = self.config_object["bot_prefix"]
+        self.mod_roles = self.config_object["mod_roles"]
 
 
 # Create the config object and read config.json
@@ -45,6 +46,18 @@ async def get_unique_message_react_users(message: discord.Message) -> list:
             if user not in unique_users:
                 unique_users.append(user)
     return unique_users
+
+
+def is_mod(member: discord.Member) -> bool:
+    """
+    Check if a member of a guild has one of the roles in mod_roles
+    :param member: A member to check if they are mod
+    :return: Boolean whether they are a mod
+    """
+    for role in member.roles:
+        if role.name in config.mod_roles:
+            return True
+    return False
 
 
 @bot.event
@@ -108,7 +121,6 @@ async def ping(ctx: discord.ext.commands.context.Context, message: discord.Messa
     else:
         # If not in a DM, warn the User and delete the message
         await ctx.author.send("Please use my commands via DM only!")
-        # TODO: Make sure that the permissions are OK and that staff are OK with this
         await ctx.message.delete()
 
 
@@ -133,17 +145,19 @@ async def ping_error(ctx: discord.ext.commands.context.Context, error):
 @bot.command()
 async def mod_ping(ctx: discord.ext.commands.context.Context, message: discord.Message):
     # Bypasses all checks and just pings for any message. Just give it any message ID
-    # TODO: Make this check for a staff role before running
-    users_to_mention = await get_unique_message_react_users(message)
-    await message.channel.send("\n".join(user.mention for user in users_to_mention))
-    # Tell the user that everything is done.
-    await ctx.send(
-        "I mentioned all the people who reacted to your post in that channel. Make sure to put a message "
-        "there telling them which lobby to join!")
-    # Add the message to the already_pinged and already_notified list
-    # Note: this does not prevent repeat staff pings
-    already_pinged_messages.append(message.id)
-    already_notified_messages.append(message.id)
+    if is_mod(ctx.author):
+        users_to_mention = await get_unique_message_react_users(message)
+        await message.channel.send("\n".join(user.mention for user in users_to_mention))
+        # Tell the user that everything is done.
+        await ctx.send(
+            "I mentioned all the people who reacted to your post in that channel. Make sure to put a message "
+            "there telling them which lobby to join!")
+        # Add the message to the already_pinged and already_notified list
+        # Note: this does not prevent repeat staff pings
+        already_pinged_messages.append(message.id)
+        already_notified_messages.append(message.id)
+    else:
+        await ctx.send("Sorry, something went wrong... You don't have permission to do that!")
 
 
 @mod_ping.error
@@ -154,9 +168,15 @@ async def mod_ping_error(ctx: discord.ext.commands.context.Context, error):
 
 @bot.command()
 async def change_min_reacts(ctx: discord.ext.commands.context.Context, min_reacts: int):
-    # TODO: Make this check for a staff role before running
-    config.min_players = min_reacts
-    await ctx.send(f"Set the minimum amount of reacts to {min_reacts}")
+    if is_mod(ctx.author):
+        config.min_players = min_reacts
+        await ctx.send(f"Set the minimum amount of reacts to {min_reacts}")
+    await ctx.send("Sorry, something went wrong... You don't have permission to do that!")
+
+
+@change_min_reacts.error
+async def change_min_reacts_error(ctx: discord.ext.commands.context.Context, error):
+    await ctx.send(error)
 
 
 # Run the bot

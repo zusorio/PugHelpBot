@@ -5,5 +5,16 @@
     "eu-looking-for-pug"
   ],
   "min_players": 12,
-  "bot_prefix": "$"
+  "bot_prefix": "$",
+  "mod_roles": [
+    "PUG Veteran",
+    "PC PUG Staff",
+    "Xbox PUG Staff",
+    "PS4 PUG Staff",
+    "PUG Moderator",
+    "Pug Boss",
+    "PUG Admin",
+    "Big Boss",
+    "Tech"
+  ]
 }
