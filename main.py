@@ -57,8 +57,7 @@ async def on_ready():
 @bot.event
 async def on_reaction_add(reaction: discord.Reaction, _):
     # If the reaction is on a message in the specified channels and wasn't pinged and notified for
-    if reaction.message.channel.name in config.allowed_channels and reaction.message.id not in (
-            already_notified_messages, already_pinged_messages):
+    if reaction.message.channel.name in config.allowed_channels and reaction.message.id not in already_notified_messages and reaction.message.id not in already_pinged_messages:
         # Get all unique users that reacted
         unique_reacts = await get_unique_message_react_users(reaction.message)
         # If there are the minimum of required reacts
@@ -67,7 +66,7 @@ async def on_reaction_add(reaction: discord.Reaction, _):
             # The command the user is told to use is (prefix)ping MESSAGE_ID_OF_ORIGINAL_POST
             await reaction.message.author.send(
                 f"Your LFP Post reached the minimum of {config.min_players}"
-                f"reacts!\nReply with `{config.bot_prefix}ping {reaction.message.id}`"
+                f"reacts!\nReply with `{config.bot_prefix}ping {reaction.message.id}` "
                 f"__**in this DM**__  to ping the people that want to join!")
             # Mark the message to not notify the user again
             already_notified_messages.append(reaction.message.id)
@@ -82,7 +81,7 @@ async def ping(ctx: discord.ext.commands.context.Context, message: discord.Messa
     :return: Nothing
     """
     # Check that we are being sent the command via DM
-    if isinstance(message.channel, discord.DMChannel):
+    if isinstance(ctx.message.channel, discord.DMChannel):
         # Make sure that the message is in a correct channel and that we haven't pinged for it yet
         if message.channel.name in config.allowed_channels and message.id not in already_pinged_messages:
             # Get all the users we need the mention for that message
