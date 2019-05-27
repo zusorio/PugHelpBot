@@ -56,13 +56,12 @@ async def send_ping(message: discord.Message, users_to_mention: list):
     :return: Nothing
     """
     # Create an embed
-    embed = discord.Embed(title=f"We have enough for pugs!!", description=f"{message.author.mention} said: {message.content}")
+    embed = discord.Embed(title=f"{message.author.display_name} said:", description=f"{message.content}")
     # Create a string of all the users separated by \n
     users_string = "\n".join(user.mention for user in users_to_mention)
-    # Embed that string
-    embed.add_field(name="Please join:", value=users_string, inline=False)
     # Post the message
     await message.channel.send(embed=embed)
+    await message.channel.send(users_string)
 
 
 def is_mod(member: discord.Member) -> bool:
