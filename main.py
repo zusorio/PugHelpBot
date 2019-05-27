@@ -48,6 +48,23 @@ async def get_unique_message_react_users(message: discord.Message) -> list:
     return unique_users
 
 
+async def send_ping(message: discord.Message, users_to_mention: list):
+    """
+    Create an embed with info and post it in the channel of the original message
+    :param message: The original message
+    :param users_to_mention: List of users to mention
+    :return: Nothing
+    """
+    # Create an embed
+    embed = discord.Embed(title=f"We have enough for pugs!!", description=f"{message.author.mention} said: {message.content}")
+    # Create a string of all the users separated by \n
+    users_string = "\n".join(user.mention for user in users_to_mention)
+    # Embed that string
+    embed.add_field(name="Please join:", value=users_string, inline=False)
+    # Post the message
+    await message.channel.send(embed=embed)
+
+
 def is_mod(member: discord.Member) -> bool:
     """
     Check if a member of a guild has one of the roles in mod_roles
@@ -78,8 +95,8 @@ async def on_reaction_add(reaction: discord.Reaction, _):
             # Send the user instructions on how to mention all of the reactants
             # The command the user is told to use is (prefix)ping MESSAGE_ID_OF_ORIGINAL_POST
             await reaction.message.author.send(
-                f"Your LFP Post reached the minimum of {config.min_players}"
-                f"reacts!\nReply with `{config.bot_prefix}ping {reaction.message.id}` "
+                f"Your LFP Post reached the minimum of {config.min_players} reacts!\n"
+                f"Reply with `{config.bot_prefix}ping {reaction.message.id}` "
                 f"__**in this DM**__  to ping the people that want to join!")
             # Mark the message to not notify the user again
             already_notified_messages.append(reaction.message.id)
@@ -101,8 +118,7 @@ async def ping(ctx: discord.ext.commands.context.Context, message: discord.Messa
             users_to_mention = await get_unique_message_react_users(message)
             # Make sure there are actually enough users for a ping
             if len(users_to_mention) >= config.min_players:
-                # If everything is OK, mention all the users in a post in the original channel, separated by newlines
-                await message.channel.send("\n".join(user.mention for user in users_to_mention))
+                await send_ping(message, users_to_mention)
                 # Add the message to the already_pinged list so that the user doesn't ping for the same message twice
                 already_pinged_messages.append(message.id)
                 # Tell the user that everything is done.
@@ -147,7 +163,7 @@ async def mod_ping(ctx: discord.ext.commands.context.Context, message: discord.M
     # Bypasses all checks and just pings for any message. Just give it any message ID
     if is_mod(ctx.author):
         users_to_mention = await get_unique_message_react_users(message)
-        await message.channel.send("\n".join(user.mention for user in users_to_mention))
+        await send_ping(message, users_to_mention)
         # Tell the user that everything is done.
         await ctx.send(
             "I mentioned all the people who reacted to your post in that channel. Make sure to put a message "
@@ -171,7 +187,8 @@ async def change_min_reacts(ctx: discord.ext.commands.context.Context, min_react
     if is_mod(ctx.author):
         config.min_players = min_reacts
         await ctx.send(f"Set the minimum amount of reacts to {min_reacts}")
-    await ctx.send("Sorry, something went wrong... You don't have permission to do that!")
+    else:
+        await ctx.send("Sorry, something went wrong... You don't have permission to do that!")
 
 
 @change_min_reacts.error
