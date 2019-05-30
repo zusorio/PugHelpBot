@@ -6,6 +6,7 @@ from .helpers import Config, PingStatus
 from .cogs.simple_ping import SimplePing
 from .cogs.admin_tools import AdminTools
 from .cogs.advanced_tools import AdvancedTools
+from .cogs.initialize import Initialize
 
 
 def main():
@@ -35,7 +36,9 @@ def main():
     bot.add_cog(SimplePing(bot, log, config, ping_status))
     bot.add_cog(AdminTools(bot, log, config))
     bot.add_cog(AdvancedTools(bot, log, config, ping_status))
+    bot.add_cog(Initialize(bot, log, config))
 
     bot.run(config.token)
+
 
 main()
