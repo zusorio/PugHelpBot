@@ -14,6 +14,7 @@ class Config:
         self.min_players = self.config_object["min_players"]
         self.bot_prefix = self.config_object["bot_prefix"]
         self.mod_roles = self.config_object["mod_roles"]
+        self.advanced_roles = self.config_object["advanced_roles"]
 
 
 # Create the config object and read config.json
@@ -76,6 +77,20 @@ def is_mod(member: discord.Member) -> bool:
     return False
 
 
+def is_advanced(member: discord.Member) -> bool:
+    """
+    Check if a member of a guild has one of the roles in advanced_roles or mod_roles
+    :param member: A member to check if they are advanced or mod
+    :return: Boolean whether they are a advanced or mod
+    """
+    for role in member.roles:
+        if role.name in config.mod_roles:
+            return True
+        if role.name in config.advanced_roles:
+            return True
+    return False
+
+
 @bot.event
 async def on_ready():
     # Set rich presence and inform us once the bot is ready
@@ -109,33 +124,31 @@ async def ping(ctx: discord.ext.commands.context.Context, message: discord.Messa
     :param message: The message ID of the message to ping for. The user get's this sent in the command they are told to use.
     :return: Nothing
     """
-    # Check that we are being sent the command via DM
-    if isinstance(ctx.message.channel, discord.DMChannel):
-        # Make sure that the message is in a correct channel and that we haven't pinged for it yet
-        if message.channel.name in config.allowed_channels and message.id not in already_pinged_messages:
-            # Get all the users we need the mention for that message
-            users_to_mention = await get_unique_message_react_users(message)
-            # Make sure there are actually enough users for a ping
-            if len(users_to_mention) >= config.min_players:
-                await send_ping(message, users_to_mention)
-                # Add the message to the already_pinged list so that the user doesn't ping for the same message twice
-                already_pinged_messages.append(message.id)
-                # Tell the user that everything is done.
-                await ctx.send(
-                    "I mentioned all the people who reacted to your post in that channel. Make sure to put a message "
-                    "there telling them which lobby to join!")
-            else:
-                # Warn the user that there are not enough reactions.
-                await ctx.send(
-                    "The message doesn't have enough reacts yet! Don't try and write commands manually. I'll tell you "
-                    "once you can ping.")
+
+    # Make sure that the message is in a correct channel and that we haven't pinged for it yet
+    if message.channel.name in config.allowed_channels and message.id not in already_pinged_messages:
+        # Get all the users we need the mention for that message
+        users_to_mention = await get_unique_message_react_users(message)
+        # Make sure there are actually enough users for a ping
+        if len(users_to_mention) >= config.min_players:
+            await send_ping(message, users_to_mention)
+            # Add the message to the already_pinged list so that the user doesn't ping for the same message twice
+            already_pinged_messages.append(message.id)
+            # Tell the user that everything is done.
+            await ctx.author.send(
+                "I mentioned all the people who reacted to your post in that channel. Make sure to put a message "
+                "there telling them which lobby to join!")
         else:
-            # If that's wrong send the user a warning.
-            await ctx.send(
-                "Somehow your command is messed up. Make sure you didn't already ping and that the number is correct!")
+            # Warn the user that there are not enough reactions.
+            await ctx.author.send(
+                "The message doesn't have enough reacts yet! Don't try and write commands manually. I'll tell you "
+                "once you can ping.")
     else:
-        # If not in a DM, warn the User and delete the message
-        await ctx.author.send("Please use my commands via DM only!")
+        # If that's wrong send the user a warning.
+        await ctx.author.send(
+            "Somehow your command is messed up. Make sure you didn't already ping and that the number is correct!")
+    # Delete the message if it is not sent
+    if not isinstance(ctx.message.channel, discord.DMChannel):
         await ctx.message.delete()
 
 
@@ -149,10 +162,10 @@ async def ping_error(ctx: discord.ext.commands.context.Context, error):
     """
     # If the message can't be found, send the user a warning
     if isinstance(error, commands.BadArgument):
-        await ctx.send("Couldn't find that message. Make sure to copy and paste the command I sent you!")
+        await ctx.author.send("Couldn't find that message. Make sure to copy and paste the command I sent you!")
     else:
         # For other errors, send a generic message and log the error
-        await ctx.send("Something went wrong... Sorry about that.")
+        await ctx.author.send("Something went wrong... Sorry about that.")
 
         print(error)
 
@@ -160,11 +173,11 @@ async def ping_error(ctx: discord.ext.commands.context.Context, error):
 @bot.command()
 async def mod_ping(ctx: discord.ext.commands.context.Context, message: discord.Message):
     # Bypasses all checks and just pings for any message. Just give it any message ID
-    if is_mod(ctx.author):
+    if is_advanced(ctx.author):
         users_to_mention = await get_unique_message_react_users(message)
         await send_ping(message, users_to_mention)
         # Tell the user that everything is done.
-        await ctx.send(
+        await ctx.author.send(
             "I mentioned all the people who reacted to your post in that channel. Make sure to put a message "
             "there telling them which lobby to join!")
         # Add the message to the already_pinged and already_notified list
@@ -172,12 +185,12 @@ async def mod_ping(ctx: discord.ext.commands.context.Context, message: discord.M
         already_pinged_messages.append(message.id)
         already_notified_messages.append(message.id)
     else:
-        await ctx.send("Sorry, something went wrong... You don't have permission to do that!")
+        await ctx.author.send("Sorry, something went wrong... You don't have permission to do that!")
 
 
 @mod_ping.error
 async def mod_ping_error(ctx: discord.ext.commands.context.Context, error):
-    await ctx.send(error)
+    await ctx.author.send(error)
     print(error)
 
 
@@ -185,14 +198,14 @@ async def mod_ping_error(ctx: discord.ext.commands.context.Context, error):
 async def change_min_reacts(ctx: discord.ext.commands.context.Context, min_reacts: int):
     if is_mod(ctx.author):
         config.min_players = min_reacts
-        await ctx.send(f"Set the minimum amount of reacts to {min_reacts}")
+        await ctx.author.send(f"Set the minimum amount of reacts to {min_reacts}")
     else:
-        await ctx.send("Sorry, something went wrong... You don't have permission to do that!")
+        await ctx.author.send("Sorry, something went wrong... You don't have permission to do that!")
 
 
 @change_min_reacts.error
 async def change_min_reacts_error(ctx: discord.ext.commands.context.Context, error):
-    await ctx.send(error)
+    await ctx.author.send(error)
 
 
 # Run the bot
