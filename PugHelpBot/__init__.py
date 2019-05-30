@@ -37,3 +37,5 @@ def main():
     bot.add_cog(AdvancedTools(bot, log, config, ping_status))
 
     bot.run(config.token)
+
+main()

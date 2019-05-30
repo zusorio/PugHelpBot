@@ -14,10 +14,12 @@ class AdminTools(commands.Cog):
         self.log.info("Loaded Cog AdminTools")
 
     @commands.command()
-    @commands.check(is_mod)
     async def change_min_reacts(self, ctx: discord.ext.commands.context.Context, min_reacts: int):
-        self.config.set_min_players(min_reacts)
-        await ctx.author.send(f"Set the minimum amount of reacts to {min_reacts}")
+        if is_mod(ctx, self.config):
+            self.config.set_min_players(min_reacts)
+            await ctx.author.send(f"Set the minimum amount of reacts to {min_reacts}")
+        else:
+            raise commands.CheckFailure
 
     @change_min_reacts.error
     async def change_min_reacts_error(self, ctx: discord.ext.commands.context.Context, error):
