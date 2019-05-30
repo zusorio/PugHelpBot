@@ -7,7 +7,6 @@
   "min_players": 12,
   "bot_prefix": "$",
   "mod_roles": [
-    "PUG Veteran",
     "PC PUG Staff",
     "Xbox PUG Staff",
     "PS4 PUG Staff",
@@ -16,5 +15,8 @@
     "PUG Admin",
     "Big Boss",
     "Tech"
+  ],
+  "advanced_roles": [
+    "PUG Veteran"
   ]
 }
