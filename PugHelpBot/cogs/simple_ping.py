@@ -78,8 +78,10 @@ class SimplePing(commands.Cog):
         """
         # If the message can't be found, send the user a warning
         if isinstance(error, commands.BadArgument):
-            await ctx.author.send("Couldn't find that message. Make sure to copy and paste the command I sent you!")
+            await ctx.author.send(f"Couldn't find that message. Make sure to copy and paste the command I sent you!\n"
+                                  f"For feedback, use this form: https://goo.gl/forms/Pn02Vbl7WWpLzKix2")
         else:
             # For other errors, send a generic message and log the error
-            await ctx.author.send("Something went wrong... Sorry about that.")
+            await ctx.author.send(f"Something went wrong... Sorry about that.\n"
+                                  f"For feedback, use this form: https://goo.gl/forms/Pn02Vbl7WWpLzKix2")
             self.log.warning(f"{ctx.author.display_name} tried to run ping but ran into this error: {error}")
