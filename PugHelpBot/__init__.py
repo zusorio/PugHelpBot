@@ -44,7 +44,7 @@ def main():
     # Create bot object with prefix from config
     bot = commands.Bot(command_prefix=config.bot_prefix)
     bot.add_cog(SimplePing(bot, log, config, ping_status))
-    bot.add_cog(AdminTools(bot, log, config))
+    bot.add_cog(AdminTools(bot, log, config, ping_status))
     bot.add_cog(AdvancedTools(bot, log, config, ping_status))
     bot.add_cog(Initialize(bot, log, config))
     log.warning("Starting Bot...")

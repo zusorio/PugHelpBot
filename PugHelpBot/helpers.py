@@ -49,13 +49,21 @@ class PingStatus:
         return [message["id"] for message in self.already_pinged]
 
     def purge(self):
+        """
+        Purge messages older than 6 hours
+        :return: Amount of messages purged
+        """
+        count = 0
         for message in self.already_notified:
-            if message["date"] < datetime.now() - timedelta(hours=12):
+            if message["date"] < datetime.now() - timedelta(seconds=1):
                 self.already_notified.remove(message)
+                count += 1
 
         for message in self.already_pinged:
-            if message["date"] < datetime.now() - timedelta(hours=12):
-                self.already_notified.remove(message)
+            if message["date"] < datetime.now() - timedelta(seconds=1):
+                self.already_pinged.remove(message)
+                count += 1
+        return count
 
 
 async def send_ping(message: discord.Message, users_to_mention: list):
