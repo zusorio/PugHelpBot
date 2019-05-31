@@ -18,6 +18,7 @@ class AdminTools(commands.Cog):
         """Change minimum required reacts"""
         if is_mod(ctx, self.config):
             self.config.set_min_players(min_reacts)
+            self.log.warning(f"Changed minimum amount of reacts to {min_reacts}")
             await ctx.author.send(f"Set the minimum amount of reacts to {min_reacts}")
         else:
             raise commands.CheckFailure

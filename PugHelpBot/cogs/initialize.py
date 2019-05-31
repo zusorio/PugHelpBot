@@ -19,4 +19,4 @@ class Initialize(commands.Cog):
         # Set rich presence and inform us once the bot is ready
         await self.bot.change_presence(status=discord.Status.online,
                                        activity=discord.Game(f"PUGS (Prefix {self.config.bot_prefix})"))
-        self.log.info("Bot is ready, set rich presence")
+        self.log.warning("Bot is ready, set rich presence")

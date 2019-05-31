@@ -6,6 +6,8 @@
   ],
   "min_players": 12,
   "bot_prefix": "$",
+  "bot_log_webhook": "WEBHOOK HERE",
+  "bot_log_name": "PugHelpBot Logs",
   "mod_roles": [
     "PC PUG Staff",
     "Xbox PUG Staff",

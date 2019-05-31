@@ -17,6 +17,8 @@ class Config:
         self.allowed_channels = self.config_object["allowed_channels"]
         self.min_players = self.config_object["min_players"]
         self.bot_prefix = self.config_object["bot_prefix"]
+        self.log_webhook_token = self.config_object["bot_log_webhook"]
+        self.log_name = self.config_object["bot_log_name"]
         self.mod_roles = self.config_object["mod_roles"]
         self.advanced_roles = self.config_object["advanced_roles"]
 
