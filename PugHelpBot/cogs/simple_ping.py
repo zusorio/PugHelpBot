@@ -36,7 +36,7 @@ class SimplePing(commands.Cog):
     @commands.command()
     async def ping(self, ctx: discord.ext.commands.context.Context, message: discord.Message):
         """
-        A command using discord.py's bot framework. Used to mention the people that reacted to the message.
+        Ping the reactants to the message ID. Has checks for channel+min reacts
         :param ctx: Discord context
         :param message: The message ID of the message to ping for. The user get's this sent in the command they are told to use.
         :return: Nothing
