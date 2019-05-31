@@ -1,5 +1,5 @@
 FROM python:3
-RUN pip3 install discord.py PyNaCl
+RUN pip3 install discord.py PyNaCl requests
 RUN mkdir -p /usr/src/bot
 WORKDIR /usr/src/bot
 
