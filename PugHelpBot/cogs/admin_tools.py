@@ -18,7 +18,7 @@ class AdminTools(commands.Cog):
         """Change minimum required reacts"""
         if is_mod(ctx, self.config):
             self.config.set_min_players(min_reacts)
-            self.log.warning(f"Changed minimum amount of reacts to {min_reacts}")
+            self.log.warning(f"{ctx.author.display_name} set the minimum amount of reacts to {min_reacts}")
             await ctx.author.send(f"Set the minimum amount of reacts to {min_reacts}")
         else:
             raise commands.CheckFailure
@@ -27,5 +27,7 @@ class AdminTools(commands.Cog):
     async def change_min_reacts_error(self, ctx: discord.ext.commands.context.Context, error):
         if isinstance(error, commands.CheckFailure):
             await ctx.author.send("Sorry, something went wrong... You don't have permission to do that!")
+            self.log.warning(f"{ctx.author.display_name} tried to run change_min_reacts but did not have permission.")
         else:
             await ctx.author.send(error)
+            self.log.warning(f"{ctx.author.display_name} tried to run change_min_reacts but ran into this error: {error}")

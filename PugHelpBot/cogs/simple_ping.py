@@ -82,4 +82,4 @@ class SimplePing(commands.Cog):
         else:
             # For other errors, send a generic message and log the error
             await ctx.author.send("Something went wrong... Sorry about that.")
-            self.log.info(error)
+            self.log.warning(f"{ctx.author.display_name} tried to run ping but ran into this error: {error}")
