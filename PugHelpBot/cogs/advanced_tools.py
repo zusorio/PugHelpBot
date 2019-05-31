@@ -16,7 +16,8 @@ class AdvancedTools(commands.Cog):
         self.log.info("Loaded Cog AdvancedTools")
 
     @commands.command()
-    async def mod_ping(self, ctx: discord.ext.commands.context.Context, message: discord.Message):
+    async def force_ping(self, ctx: discord.ext.commands.context.Context, message: discord.Message):
+        """"Force a ping on a message ID. Requires Vet or higher."""
         if is_advanced(ctx, self.config):
             # Bypasses all checks and just pings for any message. Just give it any message ID
             users_to_mention = await get_unique_message_react_users(message)
@@ -32,7 +33,7 @@ class AdvancedTools(commands.Cog):
         else:
             raise commands.CheckFailure
 
-    @mod_ping.error
+    @force_ping.error
     async def change_min_reacts_error(self, ctx: discord.ext.commands.context.Context, error):
         if isinstance(error, commands.CheckFailure):
             await ctx.author.send("Sorry, something went wrong... You don't have permission to do that!")

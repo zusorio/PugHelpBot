@@ -15,6 +15,7 @@ class AdminTools(commands.Cog):
 
     @commands.command()
     async def change_min_reacts(self, ctx: discord.ext.commands.context.Context, min_reacts: int):
+        """"Change minimum required reacts"""
         if is_mod(ctx, self.config):
             self.config.set_min_players(min_reacts)
             await ctx.author.send(f"Set the minimum amount of reacts to {min_reacts}")
