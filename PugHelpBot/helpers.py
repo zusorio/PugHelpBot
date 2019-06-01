@@ -55,12 +55,12 @@ class PingStatus:
         """
         count = 0
         for message in self.already_notified:
-            if message["date"] < datetime.now() - timedelta(seconds=1):
+            if message["date"] < datetime.now() - timedelta(hours=5):
                 self.already_notified.remove(message)
                 count += 1
 
         for message in self.already_pinged:
-            if message["date"] < datetime.now() - timedelta(seconds=1):
+            if message["date"] < datetime.now() - timedelta(hours=5):
                 self.already_pinged.remove(message)
                 count += 1
         return count

@@ -96,5 +96,6 @@ class AdminTools(commands.Cog):
 
     @tasks.loop(hours=1)
     async def auto_purge_message_cache(self):
-        self.log.warning("Purging message cache")
-        self.ping_status.purge()
+        count = self.ping_status.purge()
+        if count != 0:
+            self.log.warning(f"Purged message cache ({count} messages)")
