@@ -4,7 +4,13 @@
     "na-looking-for-pug",
     "eu-looking-for-pug"
   ],
+  "clean_channels": [
+    "na-looking-for-pug",
+    "eu-looking-for-pug"
+  ],
   "min_players": 12,
+  "delete_after_hours": 2,
+  "avoid_delete_react_threshold": 2,
   "bot_prefix": "$",
   "bot_log_webhook": "WEBHOOK HERE",
   "bot_log_name": "PugHelpBot Logs",

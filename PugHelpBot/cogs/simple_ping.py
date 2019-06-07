@@ -23,11 +23,11 @@ class SimplePing(commands.Cog):
                     # Get all unique users that reacted
                     unique_reacts = await get_unique_message_react_users(reaction.message)
                     # If there are the minimum of required reacts
-                    if len(unique_reacts) >= self.config.min_players:
+                    if len(unique_reacts) >= self.config.min_reacts:
                         # Send the user instructions on how to mention all of the reactants
                         # The command the user is told to use is (prefix)ping MESSAGE_ID_OF_ORIGINAL_POST
                         await reaction.message.author.send(
-                            f"Your LFP Post reached the minimum of {self.config.min_players} reacts!\n"
+                            f"Your LFP Post reached the minimum of {self.config.min_reacts} reacts!\n"
                             f"Reply with `{self.config.bot_prefix}ping {reaction.message.id}` "
                             f"__**in this DM**__  to ping the people that want to join!")
                         # Mark the message to not notify the user again
@@ -47,7 +47,7 @@ class SimplePing(commands.Cog):
             # Get all the users we need the mention for that message
             users_to_mention = await get_unique_message_react_users(message)
             # Make sure there are actually enough users for a ping
-            if len(users_to_mention) >= self.config.min_players:
+            if len(users_to_mention) >= self.config.min_reacts:
                 await send_ping(message, users_to_mention)
                 # Add the message to the already_pinged list so that the user doesn't ping for the same message twice
                 self.ping_status.add_already_pinged(message.id)
