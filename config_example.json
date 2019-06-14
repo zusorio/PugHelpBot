@@ -30,12 +30,21 @@
   "unofficials_ping": [
     {
       "command_channel": "ping-na",
-      "execute_channel": "na-looking-for-pug"
+      "execute_channel": "na-looking-for-pug",
+      "allow_start_utc_hour": 9,
+      "allow_start_utc_minute": 0,
+      "allow_end_utc_hour": 20,
+      "allow_end_utc_minute": 0
     },
     {
       "command_channel": "ping-eu",
-      "execute_channel": "eu-looking-for-pug"
+      "execute_channel": "eu-looking-for-pug",
+      "allow_start_utc_hour": 9,
+      "allow_start_utc_minute": 0,
+      "allow_end_utc_hour": 20,
+      "allow_end_utc_minute": 0
     }
   ],
-  "unofficials_role": "Unofficial"
+  "unofficials_role": "Unofficial",
+  "unofficials_cooldown": 2
 }

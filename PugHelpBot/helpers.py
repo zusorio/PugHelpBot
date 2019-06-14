@@ -2,7 +2,7 @@ import discord
 import discord.ext
 import os
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 
 
 class Config:
@@ -25,23 +25,40 @@ class Config:
         self.log_name = self.config_object["bot_log_name"]
         self.mod_roles = self.config_object["mod_roles"]
         self.advanced_roles = self.config_object["advanced_roles"]
-        self.unofficials_ping = self.config_object["unofficials_ping"]
-        self.unofficials_role = self.config_object["unofficials_role"]
+        self.unofficials_ping = UnofficialsStatus(self.config_object["unofficials_ping"], self.config_object["unofficials_role"], self.config_object["unofficials_cooldown"])
 
     def set_min_players(self, min_players: int):
         self.min_reacts = min_players
 
     def get_ping_channels(self):
         ping_channels = []
-        for region in self.unofficials_ping:
+        for region in self.unofficials_ping.info:
             ping_channels.append(region["command_channel"])
         return ping_channels
 
+    def get_region_from_channel_name(self, channel_name ):
+        for region in self.unofficials_ping.info:
+            if region["command_channel"] == channel_name:
+                return region
+        return None
+
     def get_channel_from_ping_channel(self, channel_name):
-        for region in self.unofficials_ping:
+        for region in self.unofficials_ping.info:
             if region["command_channel"] == channel_name:
                 return region["execute_channel"]
         return None
+
+
+class UnofficialsStatus:
+    def __init__(self, info, role, cooldown):
+        self.role_name = role
+        self.info = info
+        self.cooldown = cooldown
+        for region in info:
+            region["last_ping"] = None
+            region["allow_start_utc"] = time(hour=region["allow_start_utc_hour"], minute=region["allow_start_utc_minute"])
+            region["allow_end_utc"] = time(hour=region["allow_end_utc_hour"], minute=region["allow_end_utc_minute"])
+
 
 class PingStatus:
     """
@@ -129,7 +146,7 @@ def is_mod(ctx: discord.ext.commands.context.Context, config: Config) -> bool:
     return False
 
 
-def is_advanced(ctx: discord.ext.commands.context.Context, config: Config) -> bool:
+def is_advanced(ctx, config: Config) -> bool:
     """
     Used to check if a person has one of the advanced or mod roles
     :param ctx: Context
@@ -142,3 +159,11 @@ def is_advanced(ctx: discord.ext.commands.context.Context, config: Config) -> bo
         if role.name in config.advanced_roles:
             return True
     return False
+
+
+def time_in_range(start, end, x):
+    """Return true if x is in the range [start, end]"""
+    if start <= end:
+        return start <= x <= end
+    else:
+        return start <= x or x <= end
