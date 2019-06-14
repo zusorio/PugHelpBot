@@ -1,5 +1,6 @@
 import discord
 import discord.ext
+import os
 import json
 from datetime import datetime, timedelta
 
@@ -9,7 +10,7 @@ class Config:
     # Reads config.json and sets it's values from there
     def __init__(self):
         try:
-            with open("config.json", "r") as config_file:
+            with open("./config.json" if "config.json" in os.listdir(".") else "../config.json", "r") as config_file:
                 self.config_object = json.load(config_file)
         except FileNotFoundError:
             raise SystemExit("Could not find config")
