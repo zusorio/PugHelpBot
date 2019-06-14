@@ -11,20 +11,28 @@ class ChannelClean(commands.Cog):
         self.log = log
         self.config = config
         self.ping_status = ping_status
-
         self.log.info("Loaded Cog ChannelClean")
+        self.clean_up_channel.start()
 
     async def delete_message(self, message: discord.Message):
         await message.delete()
-        self.log.warning(f"Deleted message {message.content} by {message.author.display_name} in {message.channel.name}")
+        self.log.warning(
+            f"Deleted message {message.content} by {message.author.display_name} in {message.channel.name}")
 
-    @tasks.loop(minutes=15)
-    async def delete_old_messages(self, ctx: discord.ext.commands.context.Context):
+    @tasks.loop(seconds=15.0)
+    async def clean_up_channel(self):
+        await self.bot.wait_until_ready()
         # Loop over all channels in the clean_channel config parameter
         for channel in self.config.clean_channels:
             # Loop over all messages in the channel during the correct time
-            async for message in discord.utils.get(self.bot.get_all_channels(), name=channel).history(before=datetime.utcnow() - timedelta(hours=self.config.delete_after_hours), after=datetime.utcnow() - timedelta(hours=24)):
-                message_react_count = len(get_unique_message_react_users(message))
+            delete_hours_ago_time = datetime.utcnow() - timedelta(seconds=self.config.delete_after_hours)
+            day_ago = datetime.utcnow() - timedelta(hours=24)
+
+            # Loop over all messages in the channel during the correct time
+            async for message in discord.utils.get(self.bot.get_all_channels(), name=channel).history(before=delete_hours_ago_time, after=day_ago):
+                unique_reacts = await get_unique_message_react_users(message)
+                message_react_count = len(unique_reacts)
+
                 # If the message has enough reacts to have notified
                 if message_react_count >= self.config.min_reacts:
                     # If it was pinged for delete it
@@ -32,14 +40,16 @@ class ChannelClean(commands.Cog):
                         await self.delete_message(message)
                     # Else ping for it and delete the original message
                     else:
-                        await send_ping(message, get_unique_message_react_users(message))
+                        await send_ping(message, unique_reacts)
                         self.ping_status.add_already_pinged(message.id)
                         await self.delete_message(message)
+
                 # If it didn't have enough reacts but has enough to not be deleted ping for it.
                 elif message_react_count >= self.config.min_reacts - self.config.avoid_delete_react_threshold:
-                    await send_ping(message, get_unique_message_react_users(message))
+                    await send_ping(message, unique_reacts)
                     self.ping_status.add_already_pinged(message.id)
                     await self.delete_message(message)
-                # If it didn't hit the threshold either just delete it`
+
+                # If it didn't hit the threshold either just delete it
                 else:
                     await self.delete_message(message)

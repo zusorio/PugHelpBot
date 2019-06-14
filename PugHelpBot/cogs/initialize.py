@@ -19,4 +19,5 @@ class Initialize(commands.Cog):
         # Set rich presence and inform us once the bot is ready
         await self.bot.change_presence(status=discord.Status.online,
                                        activity=discord.Game(f"PUGS (Prefix {self.config.bot_prefix})"))
+        self.log.warning(f"\nCurrent config:\nPrefix: {self.config.bot_prefix}\nRequired reacts: {self.config.min_reacts}\nTime until cleanup {self.config.delete_after_hours} hours\nAvoid delete reacts: {self.config.min_reacts - self.config.avoid_delete_react_threshold}")
         self.log.warning("Bot is ready, set rich presence")
