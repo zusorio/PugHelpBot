@@ -25,10 +25,23 @@ class Config:
         self.log_name = self.config_object["bot_log_name"]
         self.mod_roles = self.config_object["mod_roles"]
         self.advanced_roles = self.config_object["advanced_roles"]
+        self.unofficials_ping = self.config_object["unofficials_ping"]
+        self.unofficials_role = self.config_object["unofficials_role"]
 
     def set_min_players(self, min_players: int):
         self.min_reacts = min_players
 
+    def get_ping_channels(self):
+        ping_channels = []
+        for region in self.unofficials_ping:
+            ping_channels.append(region["command_channel"])
+        return ping_channels
+
+    def get_channel_from_ping_channel(self, channel_name):
+        for region in self.unofficials_ping:
+            if region["command_channel"] == channel_name:
+                return region["execute_channel"]
+        return None
 
 class PingStatus:
     """

@@ -9,6 +9,7 @@ from .cogs.admin_tools import AdminTools
 from .cogs.advanced_tools import AdvancedTools
 from .cogs.channel_clean import ChannelClean
 from .cogs.initialize import Initialize
+from .cogs.ping_unofficials import PingUnofficials
 
 
 def main():
@@ -48,6 +49,7 @@ def main():
     bot.add_cog(AdminTools(bot, log, config, ping_status))
     bot.add_cog(AdvancedTools(bot, log, config, ping_status))
     bot.add_cog(ChannelClean(bot, log, config, ping_status))
+    bot.add_cog(PingUnofficials(bot, log, config, ping_status))
     bot.add_cog(Initialize(bot, log, config))
     log.warning("Starting Bot...")
     bot.run(config.token)

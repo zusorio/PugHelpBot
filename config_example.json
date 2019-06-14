@@ -26,5 +26,16 @@
   ],
   "advanced_roles": [
     "PUG Veteran"
-  ]
+  ],
+  "unofficials_ping": [
+    {
+      "command_channel": "ping-na",
+      "execute_channel": "na-looking-for-pug"
+    },
+    {
+      "command_channel": "ping-eu",
+      "execute_channel": "eu-looking-for-pug"
+    }
+  ],
+  "unofficials_role": "Unofficial"
 }
