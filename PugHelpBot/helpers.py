@@ -1,5 +1,6 @@
 import discord
 import discord.ext
+import os
 import json
 from datetime import datetime, timedelta
 
@@ -9,13 +10,16 @@ class Config:
     # Reads config.json and sets it's values from there
     def __init__(self):
         try:
-            with open("config.json", "r") as config_file:
+            with open("./config.json" if "config.json" in os.listdir(".") else "../config.json", "r") as config_file:
                 self.config_object = json.load(config_file)
         except FileNotFoundError:
             raise SystemExit("Could not find config")
         self.token = self.config_object["token"]
         self.allowed_channels = self.config_object["allowed_channels"]
-        self.min_players = self.config_object["min_players"]
+        self.clean_channels = self.config_object["clean_channels"]
+        self.min_reacts = self.config_object["min_players"]
+        self.delete_after_hours = self.config_object["delete_after_hours"]
+        self.avoid_delete_react_threshold = self.config_object["avoid_delete_react_threshold"]
         self.bot_prefix = self.config_object["bot_prefix"]
         self.log_webhook_token = self.config_object["bot_log_webhook"]
         self.log_name = self.config_object["bot_log_name"]
@@ -23,7 +27,7 @@ class Config:
         self.advanced_roles = self.config_object["advanced_roles"]
 
     def set_min_players(self, min_players: int):
-        self.min_players = min_players
+        self.min_reacts = min_players
 
 
 class PingStatus:
