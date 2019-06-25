@@ -23,11 +23,12 @@ class ChannelClean(commands.Cog):
     @tasks.loop(minutes=5)
     async def clean_up_channel(self):
         await self.bot.wait_until_ready()
-        # Loop over all channels in the clean_channel config parameter
+        
+        # Find the times between we want to check messages
+        delete_hours_ago_time = datetime.utcnow() - timedelta(hours=self.config.delete_after_hours)
+        day_ago = datetime.utcnow() - timedelta(hours=24)
+        
         for channel in self.channels_to_check: # For each channel obj in channels to check
-            # Find the times between we want to check messages
-            delete_hours_ago_time = datetime.utcnow() - timedelta(hours=self.config.delete_after_hours)
-            day_ago = datetime.utcnow() - timedelta(hours=24)
 
             # Loop over all messages in the channel during the correct time
             async for message in channel.history(before=delete_hours_ago_time, after=day_ago):
