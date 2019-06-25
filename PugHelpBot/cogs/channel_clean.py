@@ -10,7 +10,8 @@ class ChannelClean(commands.Cog):
         self.bot = bot
         self.log = log
         self.config = config
-        self.channels_to_check = [discord.utils.get(self.bot.get_all_channels(), name=channel) for channel in self.config.clean_channels]
+        self.channels_to_check = [discord.utils.get(self.bot.get_all_channels(), name=channel) 
+                                  for channel in self.config.clean_channels]
         self.ping_status = ping_status
         self.log.info("Loaded Cog ChannelClean")
         self.clean_up_channel.start()
@@ -23,12 +24,12 @@ class ChannelClean(commands.Cog):
     @tasks.loop(minutes=5)
     async def clean_up_channel(self):
         await self.bot.wait_until_ready()
-        
+
         # Find the times between we want to check messages
         delete_hours_ago_time = datetime.utcnow() - timedelta(hours=self.config.delete_after_hours)
         day_ago = datetime.utcnow() - timedelta(hours=24)
-        
-        for channel in self.channels_to_check: # For each channel obj in channels to check
+
+        for channel in self.channels_to_check:  # For each channel obj in channels to check
 
             # Loop over all messages in the channel during the correct time
             async for message in channel.history(before=delete_hours_ago_time, after=day_ago):
