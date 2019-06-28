@@ -59,11 +59,13 @@ class SimplePing(commands.Cog):
                 # Warn the user that there are not enough reactions.
                 await ctx.author.send(
                     "The message doesn't have enough reacts yet! Don't try and write commands manually. I'll tell you "
-                    "once you can ping.")
+                    "once you can ping\n**This might be because someone unreacted to your post, so "
+                    "now it doesn't have enough reacts!**\nFor feedback, use this form: https://goo.gl/forms/Pn02Vbl7WWpLzKix2")
         else:
             # If that's wrong send the user a warning.
             await ctx.author.send(
-                "Somehow your command is messed up. Make sure you didn't already ping and that the number is correct!")
+                "Somehow your command is messed up. Make sure you didn't already ping and that the number is correct!\n"
+                "For feedback, use this form: https://goo.gl/forms/Pn02Vbl7WWpLzKix2")
         # Delete the message if it is not sent
         if not isinstance(ctx.message.channel, discord.DMChannel):
             await ctx.message.delete()
