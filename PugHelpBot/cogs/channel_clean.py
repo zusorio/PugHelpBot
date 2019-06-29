@@ -32,8 +32,6 @@ class ChannelClean(commands.Cog):
 
     @tasks.loop(minutes=5)
     async def clean_up_channel(self):
-        self.log.warning("Cleaning channels...")
-
         # Find the times between we want to check messages
         delete_hours_ago_time = datetime.utcnow() - timedelta(hours=self.config.delete_after_hours)
         day_ago = datetime.utcnow() - timedelta(hours=24)
