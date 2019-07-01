@@ -46,7 +46,7 @@ class ChannelClean(commands.Cog):
                 # If the message has enough reacts to have notified
                 if message_react_count >= self.config.min_reacts:
                     # If it was pinged for delete it
-                    if message.id in self.ping_status.already_pinged:
+                    if message.id in self.ping_status.get_already_pinged_simple():
                         await self.delete_message(message)
                     # Else ping for it and delete the original message
                     else:
@@ -57,7 +57,7 @@ class ChannelClean(commands.Cog):
                 # If it didn't have enough reacts but has enough to not be deleted ping for it.
                 elif message_react_count >= self.config.min_reacts - self.config.avoid_delete_react_threshold:
                     # If it was pinged for delete it
-                    if message.id in self.ping_status.already_pinged:
+                    if message.id in self.ping_status.get_already_pinged_simple():
                         await self.delete_message(message)
                     # Ping for it then delete original
                     else:
