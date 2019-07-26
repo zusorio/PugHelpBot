@@ -25,6 +25,11 @@ class ChannelClean(commands.Cog):
         self.clean_up_channel.start()
         self.log.info("CleanChannel is fully ready")
 
+    async def auto_ping_message(self, message, unique_reacts):
+        if self.config.auto_ping:
+            await send_ping(message, unique_reacts)
+            self.ping_status.add_already_pinged(message.id)
+
     async def delete_message(self, message: discord.Message):
         await message.delete()
         self.log.warning(
@@ -50,8 +55,7 @@ class ChannelClean(commands.Cog):
                         await self.delete_message(message)
                     # Else ping for it and delete the original message
                     else:
-                        await send_ping(message, unique_reacts)
-                        self.ping_status.add_already_pinged(message.id)
+                        await self.auto_ping_message(message, unique_reacts)
                         await self.delete_message(message)
 
                 # If it didn't have enough reacts but has enough to not be deleted ping for it.
@@ -61,8 +65,7 @@ class ChannelClean(commands.Cog):
                         await self.delete_message(message)
                     # Ping for it then delete original
                     else:
-                        await send_ping(message, unique_reacts)
-                        self.ping_status.add_already_pinged(message.id)
+                        await self.auto_ping_message(message, unique_reacts)
                         await self.delete_message(message)
 
                 # If it didn't hit the threshold either just delete it

@@ -25,6 +25,7 @@ class Config:
         self.log_name = self.config_object["bot_log_name"]
         self.mod_roles = self.config_object["mod_roles"]
         self.advanced_roles = self.config_object["advanced_roles"]
+        self.auto_ping = self.config_object["auto_ping"]
 
     def set_min_players(self, min_players: int):
         self.min_reacts = min_players
