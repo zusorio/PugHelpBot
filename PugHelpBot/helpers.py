@@ -26,6 +26,7 @@ class Config:
         self.mod_roles = self.config_object["mod_roles"]
         self.advanced_roles = self.config_object["advanced_roles"]
         self.auto_ping = self.config_object["auto_ping"]
+        self.role_menus = self.config_object["role_menus"]
 
     def set_min_players(self, min_players: int):
         self.min_reacts = min_players
