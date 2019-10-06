@@ -6,7 +6,11 @@
   ],
   "clean_channels": [
     "na-looking-for-pug",
-    "eu-looking-for-pug"
+    "eu-looking-for-pug",
+    "ping-setup"
+  ],
+  "avoid_pings": [
+    "ping-setup"
   ],
   "min_players": 12,
   "delete_after_hours": 2,

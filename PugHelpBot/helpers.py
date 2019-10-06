@@ -17,6 +17,7 @@ class Config:
         self.token = self.config_object["token"]
         self.allowed_channels = self.config_object["allowed_channels"]
         self.clean_channels = self.config_object["clean_channels"]
+        self.avoid_pings = self.config_object["avoid_pings"]
         self.min_reacts = self.config_object["min_players"]
         self.delete_after_hours = self.config_object["delete_after_hours"]
         self.avoid_delete_react_threshold = self.config_object["avoid_delete_react_threshold"]
