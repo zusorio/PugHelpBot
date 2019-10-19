@@ -32,8 +32,12 @@ class ChannelClean(commands.Cog):
 
     async def delete_message(self, message: discord.Message):
         await message.delete()
-        self.log.warning(
-            f"Deleted message {message.content if message.content else 'no displayable content'} by {message.author.display_name} in {message.channel.name}")
+        # If the message has normal content display it after deleting
+        if message.content:
+            self.log.warning(f"Deleted message {message.content} by {message.author.display_name} in {message.channel.name}")
+        # Else the message must have an embed
+        else:
+            self.log.warning(f"Deleted an embed by {message.author.display_name} in {message.channel.name}")
 
     @tasks.loop(minutes=5)
     async def clean_up_channel(self):
@@ -47,6 +51,8 @@ class ChannelClean(commands.Cog):
             async for message in channel.history(before=delete_hours_ago_time, after=day_ago):
                 unique_reacts = await get_unique_message_react_users(message)
                 message_react_count = len(unique_reacts)
+                status_message = "It is a non-ping channel" if channel.name in self.config.avoid_pings else "It is a standard channel"
+                self.log.warning(f"Cleaning channel {channel.name}\n{status_message}")
                 # If the message is in avoid_pings just delete it
                 if channel.name in self.config.avoid_pings:
                     await self.delete_message(message)
