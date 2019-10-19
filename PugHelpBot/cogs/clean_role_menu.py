@@ -19,7 +19,7 @@ class CleanRoleMenu(commands.Cog):
         user = self.bot.get_guild(payload.guild_id).get_member(payload.user_id)
 
         if payload.message_id in self.config.role_menus:
-            role_menu_allowed_emoji = ["✅", "partyblob"]
+            role_menu_allowed_emoji = ["✅", "PartyBlob0"]
             if payload.emoji.name not in role_menu_allowed_emoji:
                 reacted_message = await self.bot.get_channel(payload.channel_id).fetch_message(payload.message_id)
                 await reacted_message.remove_reaction(payload.emoji, user)
